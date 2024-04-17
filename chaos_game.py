@@ -5,7 +5,6 @@ Auteur : Assa DIABIRA & Inès MANOUR
 Dernière modification : 17/04/2024
 """
 
-
 import numpy as np  # Importation de la bibliothèque NumPy pour le calcul numérique
 import matplotlib.pyplot as plt  # Importation de la bibliothèque Matplotlib pour la création de graphiques
 
@@ -92,6 +91,16 @@ def generate_chaos_game_representation(seq: str, size: int) -> np.ndarray:
         
         # Attribution du nucléotide à la section correspondante
         chaos_game_representation[y, x] += 1  # Incrémentation du compteur du nucléotide
+
+    # Affichage de la matrice du Chaos Game (pour le débogage)
+    print("Matrice du Chaos Game :")
+    print(chaos_game_representation)
+
+    # Affichage de la matrice avec Matplotlib
+    plt.imshow(chaos_game_representation, cmap='hot', origin='upper')
+    plt.title("Représentation du Chaos Game")
+    plt.colorbar()
+    plt.show()
     
     return chaos_game_representation  # Retourne la matrice représentant le Chaos Game
 
