@@ -5,6 +5,7 @@ Auteur : Assa DIABIRA & Inès MANOUR
 Dernière modification : 17/04/2024
 """
 
+import sys
 import numpy as np  # Importation de la bibliothèque NumPy pour le calcul numérique
 import matplotlib.pyplot as plt  # Importation de la bibliothèque Matplotlib pour la création de graphiques
 
@@ -15,6 +16,32 @@ nucleotide_coords = {
     'C': np.array([0, 1]),  # Coordonnées pour la base C
     'G': np.array([1, 1])   # Coordonnées pour la base G
 }
+
+def get_dna_sequence_from_genbank(genbank_file: str) -> str:
+    """
+    Récupère la séquence d'ADN à partir d'un fichier GenBank.
+
+    Paramètres
+    ----------
+    genbank_file : str
+        Chemin vers le fichier GenBank.
+
+    Renvois
+    -------
+    dna_sequence : str
+        Séquence d'ADN extraite du fichier GenBank.
+    """
+    dna_sequence = ""
+    with open(genbank_file, "r") as file:
+        for line in file:
+            if line.startswith("ORIGIN"):
+                break
+        for line in file:
+            if line.strip().isalpha():
+                dna_sequence += line.strip().upper()
+            elif line.startswith("//"):
+                break
+    return dna_sequence
 
 def count_kmers(seq: str, k: int) -> dict:
     """
@@ -92,11 +119,6 @@ def generate_chaos_game_representation(seq: str, size: int) -> np.ndarray:
         # Attribution du nucléotide à la section correspondante
         chaos_game_representation[y, x] += 1  # Incrémentation du compteur du nucléotide
 
-    """# Affichage de la matrice du Chaos Game (pour le débogage)
-    print("Matrice du Chaos Game :")
-    print(chaos_game_representation)
-    """
-
     # Affichage de la matrice avec Matplotlib
     plt.imshow(chaos_game_representation, cmap='hot', origin='upper')
     plt.title("Représentation du Chaos Game")
@@ -107,7 +129,11 @@ def generate_chaos_game_representation(seq: str, size: int) -> np.ndarray:
 
 # Exemple d'utilisation
 if __name__ == "__main__":
-    dna_sequence = "ATCGATCGATCG"  # Séquence d'ADN de test
+    if len(sys.argv) != 2:
+        print("Erreur: Fichier genbank non fourni !")
+        sys.exit(1)
+    genbank_file = sys.argv[1]
+    dna_sequence = get_dna_sequence_from_genbank(genbank_file)
     kmer_length = 3  # Longueur des k-mers à considérer
     image_size = 1000  # Taille de l'image de sortie en pixels
     
