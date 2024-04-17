@@ -92,9 +92,10 @@ def generate_chaos_game_representation(seq: str, size: int) -> np.ndarray:
         # Attribution du nucléotide à la section correspondante
         chaos_game_representation[y, x] += 1  # Incrémentation du compteur du nucléotide
 
-    # Affichage de la matrice du Chaos Game (pour le débogage)
+    """# Affichage de la matrice du Chaos Game (pour le débogage)
     print("Matrice du Chaos Game :")
     print(chaos_game_representation)
+    """
 
     # Affichage de la matrice avec Matplotlib
     plt.imshow(chaos_game_representation, cmap='hot', origin='upper')
