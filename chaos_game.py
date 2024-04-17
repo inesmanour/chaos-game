@@ -119,6 +119,11 @@ def generate_chaos_game_representation(seq: str, size: int) -> np.ndarray:
         # Attribution du nucléotide à la section correspondante
         chaos_game_representation[y, x] += 1  # Incrémentation du compteur du nucléotide
 
+    # Affichage de la matrice du Chaos Game (pour le débogage)
+    print("Matrice du Chaos Game :")
+    print(chaos_game_representation)
+    
+
     # Affichage de la matrice avec Matplotlib
     plt.imshow(chaos_game_representation, cmap='hot', origin='upper')
     plt.title("Représentation du Chaos Game")
@@ -130,7 +135,7 @@ def generate_chaos_game_representation(seq: str, size: int) -> np.ndarray:
 # Exemple d'utilisation
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Erreur: Fichier genbank non fourni !")
+        print("Usage: python chaos_game.py <genbank_file>")
         sys.exit(1)
     genbank_file = sys.argv[1]
     dna_sequence = get_dna_sequence_from_genbank(genbank_file)
