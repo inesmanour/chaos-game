@@ -162,7 +162,7 @@ if __name__ == "__main__":
         sys.exit(1)
     genbank_file = sys.argv[1]
     dna_sequence = get_dna_sequence_from_genbank(genbank_file)
-    #print("Séquence d'ADN extraite :", dna_sequence)  # Ajout de cette ligne pour afficher la séquence extraite
+    print("Séquence d'ADN extraite :", dna_sequence)  # Ajout de cette ligne pour afficher la séquence extraite
     kmer_length = 3  # Longueur des k-mers à considérer
     image_size = 1000  # Taille de l'image de sortie en pixels
     
