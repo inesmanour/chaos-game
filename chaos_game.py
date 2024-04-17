@@ -118,11 +118,6 @@ def generate_chaos_game_representation(seq: str, size: int) -> np.ndarray:
     chaos_game_representation : np.ndarray
         Matrice représentant le Chaos Game.
     """
-    # Vérification de la validité de la séquence d'ADN
-    if not is_valid_dna_sequence(seq):
-        print("La séquence d'ADN fournie n'est pas valide.")
-        return None
-    
     # Initialisation de la matrice de représentation
     chaos_game_representation = np.zeros((size, size))  # Création d'une matrice de zéros
     
@@ -130,23 +125,30 @@ def generate_chaos_game_representation(seq: str, size: int) -> np.ndarray:
     section_size = size // 2  # Taille de chaque section
     
     # Parcours de la séquence pour générer les points
+    current_position = np.array([0.5, 0.5])  # Position initiale au centre du carré
+
     for nucleotide in seq:
         # Calcul des coordonnées du prochain point
-        next_position = nucleotide_coords.get(nucleotide, np.array([0, 0]))  # Utilisation de get pour gérer les nucléotides inconnus
-        
+        next_position = nucleotide_coords.get(nucleotide, np.array([0.5, 0.5]))  # Utilisation de get pour gérer les nucléotides inconnus
+
+        # Mise à jour de la position actuelle
+        current_position = (current_position + next_position) / 2
+
         # Redimensionnement des coordonnées pour qu'elles s'inscrivent dans les limites de l'image
-        x = min(int(next_position[0] * section_size), section_size - 1)  # Coordonnée x avec une limite de taille
-        y = min(int(next_position[1] * section_size), section_size - 1)  # Coordonnée y avec une limite de taille
-        
+        x = min(int(current_position[0] * section_size), section_size - 1)  # Coordonnée x avec une limite de taille
+        y = min(int(current_position[1] * section_size), section_size - 1)  # Coordonnée y avec une limite de taille
+
         # Attribution du nucléotide à la section correspondante
         chaos_game_representation[y, x] += 1  # Incrémentation du compteur du nucléotide
 
-     # Affichage de la matrice du Chaos Game
+    """Affichage de la matrice du Chaos Game (pour le débogage)"""
     print("Matrice du Chaos Game :")
     print(chaos_game_representation)
+
     
+
     # Affichage de la matrice avec Matplotlib
-    plt.imshow(chaos_game_representation, cmap='hot', origin='upper')
+    plt.imshow(chaos_game_representation, cmap='gray', origin='upper')
     plt.title("Représentation du Chaos Game")
     plt.colorbar()
     plt.show()
