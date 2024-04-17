@@ -43,6 +43,23 @@ def get_dna_sequence_from_genbank(genbank_file: str) -> str:
                 break
     return dna_sequence
 
+def is_valid_dna_sequence(seq: str) -> bool:
+    """
+    Vérifie si une séquence d'ADN est valide.
+
+    Paramètres
+    ----------
+    seq : str
+        Séquence d'ADN à vérifier.
+
+    Renvois
+    -------
+    bool
+        True si la séquence est valide, False sinon.
+    """
+    valid_bases = {'A', 'T', 'C', 'G'}
+    return all(base in valid_bases for base in seq)
+
 def count_kmers(seq: str, k: int) -> dict:
     """
     Compte le nombre d'occurrences de chaque k-mer dans la séquence.
@@ -101,6 +118,11 @@ def generate_chaos_game_representation(seq: str, size: int) -> np.ndarray:
     chaos_game_representation : np.ndarray
         Matrice représentant le Chaos Game.
     """
+    # Vérification de la validité de la séquence d'ADN
+    if not is_valid_dna_sequence(seq):
+        print("La séquence d'ADN fournie n'est pas valide.")
+        return None
+    
     # Initialisation de la matrice de représentation
     chaos_game_representation = np.zeros((size, size))  # Création d'une matrice de zéros
     
@@ -119,11 +141,6 @@ def generate_chaos_game_representation(seq: str, size: int) -> np.ndarray:
         # Attribution du nucléotide à la section correspondante
         chaos_game_representation[y, x] += 1  # Incrémentation du compteur du nucléotide
 
-    # Affichage de la matrice du Chaos Game (pour le débogage)
-    print("Matrice du Chaos Game :")
-    print(chaos_game_representation)
-    
-
     # Affichage de la matrice avec Matplotlib
     plt.imshow(chaos_game_representation, cmap='hot', origin='upper')
     plt.title("Représentation du Chaos Game")
@@ -135,10 +152,11 @@ def generate_chaos_game_representation(seq: str, size: int) -> np.ndarray:
 # Exemple d'utilisation
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: python chaos_game.py <genbank_file>")
+        print("Erreur : Fichier genbank non fourni !")
         sys.exit(1)
     genbank_file = sys.argv[1]
     dna_sequence = get_dna_sequence_from_genbank(genbank_file)
+    print("Séquence d'ADN extraite :", dna_sequence)  # Ajout de cette ligne pour afficher la séquence extraite
     kmer_length = 3  # Longueur des k-mers à considérer
     image_size = 1000  # Taille de l'image de sortie en pixels
     
