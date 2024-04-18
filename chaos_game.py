@@ -1,170 +1,166 @@
 """
 Nom du fichier : chaos_game.py
-Description : Ce fichier contient le code source l'implémentation de l'algorithme du Chaos Game pour générer une représentation visuelle d'une séquence d'ADN.
+Description : Ce fichier contient le code source de l'implémentation de l'algorithme du Chaos Game pour générer une représentation visuelle d'une séquence d'ADN.
 Auteur : Assa DIABIRA & Inès MANOUR
-Dernière modification : 17/04/2024
+Dernière modification : 18/04/2024
 """
 
-import sys
-import numpy as np  # Importation de la bibliothèque NumPy pour le calcul numérique
-import matplotlib.pyplot as plt  # Importation de la bibliothèque Matplotlib pour la création de graphiques
+#-----------------------------------------------------------------------------------------------------------------
+#                                   Partie 1 : Représentation CGR Simple
+#-----------------------------------------------------------------------------------------------------------------
 
-# Définition des coordonnées des bases ATCG dans le carré
-nucleotide_coords = {
-    'A': np.array([0, 0]),  # Coordonnées pour la base A
-    'T': np.array([1, 0]),  # Coordonnées pour la base T
-    'C': np.array([0, 1]),  # Coordonnées pour la base C
-    'G': np.array([1, 1])   # Coordonnées pour la base G
-}
+import numpy as np # Importation de la bibliothèque numpy pour le calcul numérique
+import sys # Importation pour la mise en argument des fichiers
+import matplotlib.pyplot as plt # Importation de la bibliothèque matplotlib pour les graphiques
 
-def get_dna_sequence_from_genbank(genbank_file: str) -> str:
+def read_sequence_from_gbk(gbk_file):
     """
-    Récupère la séquence d'ADN à partir d'un fichier GenBank.
+    Lecture du fichier GenBank et extraction de la séquence d'ADN.
 
     Paramètres
     ----------
-    genbank_file : str
+    gbk_file : str
         Chemin vers le fichier GenBank.
 
     Renvois
     -------
-    dna_sequence : str
+    sequence : str
         Séquence d'ADN extraite du fichier GenBank.
     """
-    dna_sequence = ""
-    with open(genbank_file, "r") as file:
+    print("Lecture du fichier GenBank : {}".format(gbk_file))
+    sequence = ""
+    with open(gbk_file, "r") as file:
         for line in file:
             if line.startswith("ORIGIN"):
                 break
         for line in file:
             if line.startswith("//"):
                 break
-            dna_sequence += ''.join(filter(str.isalpha, line.strip().upper()))
-    return dna_sequence
+            sequence += ''.join(filter(str.isalpha, line.strip().upper()))
+    return sequence
 
-
-def is_valid_dna_sequence(seq: str) -> bool:
+def generate_kmers(sequence, k):
     """
-    Vérifie si une séquence d'ADN est valide.
+    Génère tous les k-mers possibles à partir d'une séquence d'ADN.
 
     Paramètres
     ----------
-    seq : str
-        Séquence d'ADN à vérifier.
-
-    Renvois
-    -------
-    bool
-        True si la séquence est valide, False sinon.
-    """
-    valid_bases = {'A', 'T', 'C', 'G'}
-    return all(base in valid_bases for base in seq)
-
-def count_kmers(seq: str, k: int) -> dict:
-    """
-    Compte le nombre d'occurrences de chaque k-mer dans la séquence.
-
-    Paramètres
-    ----------
-    seq : str
-        Séquence nucléotidique.
+    sequence : str
+        Séquence d'ADN.
     k : int
-        Longueur des k-mers à considérer.
+        Taille des k-mers.
 
     Renvois
     -------
-    kmer_count : dict
-        Dictionnaire contenant les k-mers comme clés et leur nombre d'occurrences comme valeurs.
+    kmers : list
+        Liste des k-mers de taille k.
     """
-    kmer_count = {}  # Initialisation du dictionnaire de comptage des k-mers
-    for i in range(len(seq) - k + 1):
-        kmer = seq[i:i+k]  # Extraction du k-mer à partir de la séquence
-        if "N" not in kmer:  # Ignorer les k-mers contenant des 'N'
-            kmer_count[kmer] = kmer_count.get(kmer, 0) + 1  # Incrémentation du compteur du k-mer
-    return kmer_count  # Retourne le dictionnaire de comptage des k-mers
+    kmers = []
+    for i in range(len(sequence) - k + 1):
+        kmers.append(sequence[i:i + k])
+    return kmers
 
-def probabilities(kmer_count: dict) -> dict:
+def generate_cgr_coordinates(sequence, k):
     """
-    Calcule les probabilités pour chaque k-mer.
+    Génère les coordonnées pour chaque k-mer dans l'espace du Chaos Game.
 
     Paramètres
     ----------
-    kmer_count : dict
-        Dictionnaire contenant les comptes de chaque k-mer.
+    sequence : str
+        Séquence d'ADN.
+    k : int
+        Taille des k-mers.
 
     Renvois
     -------
-    kmer_probs : dict
-        Dictionnaire contenant les k-mers comme clés et leur probabilité d'occurrence comme valeurs.
+    coordinates : list
+        Liste des coordonnées (x, y) pour chaque k-mer.
     """
-    total_count = sum(kmer_count.values())  # Calcul du nombre total de k-mers
-    if total_count == 0:
-        return {}  # Éviter la division par zéro
-    return {kmer: count / total_count for kmer, count in kmer_count.items()}  # Calcul des probabilités
+    coordinates = [(0.5, 0.5)]  # Définition du début au centre du carré
+    x, y = 0.5, 0.5
+    
+    # Définir les coordonnées des nucléotides
+    nucleotide_coordinates = {'A': (0, 1), 'T': (1, 1), 'G': (1, 0), 'C': (0, 0)}
 
-def generate_chaos_game_representation(seq: str, size: int) -> np.ndarray:
+    # Générer les k-mers et calculer les coordonnées pour chaque nucléotide
+    kmers = generate_kmers(sequence, k)
+    for kmer in kmers:
+        for nucleotide in kmer:
+            nx, ny = nucleotide_coordinates[nucleotide]
+            x = (x + nx) / 2
+            y = (y + ny) / 2
+            coordinates.append((x, y))
+    
+    return coordinates
+
+def plot_cgr(coordinates, filename, k):
     """
-    Génère une représentation du Chaos Game à partir d'une séquence d'ADN.
+    Représente graphiquement les coordonnées dans l'espace du Chaos Game.
 
     Paramètres
     ----------
-    seq : str
-        Séquence d'ADN à partir de laquelle générer la représentation du Chaos Game.
-    size : int
-        Taille de l'image de sortie (en pixels).
+    coordinates : list
+        Liste des coordonnées (x, y) des nucléotides.
+    filename : str
+        Nom du fichier GenBank.
+    k : int
+        Taille des k-mers.
 
     Renvois
     -------
-    chaos_game_representation : np.ndarray
-        Matrice représentant le Chaos Game.
+    None
     """
-    # Initialisation de la matrice de représentation
-    chaos_game_representation = np.zeros((size, size))  # Création d'une matrice de zéros
+    x, y = zip(*coordinates)
+    plt.scatter(x, y, c=range(len(x)), cmap='gray', s=0.2)  # Modifier le paramètre s ici pour ajuster la taille des points
     
-    # Division de l'image en sections
-    section_size = size // 2  # Taille de chaque section
+    # Ajouter les bases à côté du carré en fonction de leurs coordonnées
+    nucleotide_positions = {'A': (0, 1), 'T': (1, 1), 'G': (1, 0), 'C': (0, 0)}
+    for nucleotide, (nx, ny) in nucleotide_positions.items():
+        plt.text(nx, ny, nucleotide, fontsize=12, ha='left', va='center_baseline')
     
-    # Parcours de la séquence pour générer les points
-    current_position = np.array([0.5, 0.5])  # Position initiale au centre du carré
-
-    for nucleotide in seq:
-        # Calcul des coordonnées du prochain point
-        next_position = nucleotide_coords.get(nucleotide, np.array([0.5, 0.5]))  # Utilisation de get pour gérer les nucléotides inconnus
-
-        # Mise à jour de la position actuelle
-        current_position = (current_position + next_position) / 2
-
-        # Redimensionnement des coordonnées pour qu'elles s'inscrivent dans les limites de l'image
-        x = min(int(current_position[0] * section_size), section_size - 1)  # Coordonnée x avec une limite de taille
-        y = min(int(current_position[1] * section_size), section_size - 1)  # Coordonnée y avec une limite de taille
-
-        # Attribution du nucléotide à la section correspondante
-        chaos_game_representation[y, x] += 1  # Incrémentation du compteur du nucléotide
-
-    """Affichage de la matrice du Chaos Game (pour le débogage)
-    print("Matrice du Chaos Game :")
-    print(chaos_game_representation)
-    """
-
-    # Affichage de la matrice avec Matplotlib
-    plt.imshow(chaos_game_representation, cmap='gray', origin='upper')
-    plt.title("Représentation du Chaos Game")
-    plt.colorbar()
+    # Inverser l'ordre des lignes de la matrice pour afficher correctement l'image
+    plt.gca().invert_yaxis()
+    
+    plt.title("Représentation CGR de {} avec {} kmer(s)".format(filename, k))
+    plt.gca().set_aspect('equal', adjustable='box')
+    plt.xticks([])  # Supprimer les graduations de l'axe x
+    plt.yticks([])  # Supprimer les graduations de l'axe y
     plt.show()
-    
-    return chaos_game_representation  # Retourne la matrice représentant le Chaos Game
 
-# Exemple d'utilisation
+
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Erreur : Fichier genbank non fourni !")
+    if len(sys.argv) != 3:
+        print("Erreur: Nombre incorrect d'arguments.")
+        print("Usage: python chaos_game.py <fichier_genbank> <k>")
         sys.exit(1)
-    genbank_file = sys.argv[1]
-    dna_sequence = get_dna_sequence_from_genbank(genbank_file)
-    print("Séquence d'ADN extraite :", dna_sequence)  # Ajout de cette ligne pour afficher la séquence extraite
-    kmer_length = 3  # Longueur des k-mers à considérer
-    image_size = 1000  # Taille de l'image de sortie en pixels
     
-    kmer_counts = count_kmers(dna_sequence, kmer_length)  # Comptage des k-mers dans la séquence
-    kmer_probs = probabilities(kmer_counts)  # Calcul des probabilités des k-mers
-    chaos_game_matrix = generate_chaos_game_representation(dna_sequence, image_size)  # Génération de la représentation du Chaos Game
+    gbk_file = sys.argv[1]
+    k = sys.argv[2]
+    
+    if not gbk_file:
+        print("Erreur: Veuillez spécifier le fichier GenBank en tant qu'argument.")
+        sys.exit(1)
+    
+    if not k:
+        print("Erreur: Veuillez spécifier la taille des k-mers en tant qu'argument.")
+        sys.exit(1)
+    
+    try:
+        k = int(k)
+        if k <= 0:
+            raise ValueError("La taille des k-mers doit être un entier positif.")
+    except ValueError as e:
+        print("Erreur de format: La taille des k-mers doit être un entier positif.")
+        sys.exit(1)
+    
+    sequence = read_sequence_from_gbk(gbk_file)
+    
+    if not sequence:
+        print("Erreur: Le fichier GenBank est vide ou inaccessible.")
+        sys.exit(1)
+    
+    cgr_coordinates = generate_cgr_coordinates(sequence, k)
+    plot_cgr(cgr_coordinates, gbk_file, k)
+#-----------------------------------------------------------------------------------------------------------------
+#                                   Partie 2 : Représentation FCGR with count matrix
+#-----------------------------------------------------------------------------------------------------------------
