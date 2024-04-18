@@ -141,12 +141,11 @@ def generate_chaos_game_representation(seq: str, size: int) -> np.ndarray:
         # Attribution du nucléotide à la section correspondante
         chaos_game_representation[y, x] += 1  # Incrémentation du compteur du nucléotide
 
-    """Affichage de la matrice du Chaos Game (pour le débogage)"""
+    """Affichage de la matrice du Chaos Game (pour le débogage)
     print("Matrice du Chaos Game :")
     print(chaos_game_representation)
-
+    """
     
-
     # Affichage de la matrice avec Matplotlib
     plt.imshow(chaos_game_representation, cmap='gray', origin='upper')
     plt.title("Représentation du Chaos Game")
@@ -162,7 +161,7 @@ if __name__ == "__main__":
         sys.exit(1)
     genbank_file = sys.argv[1]
     dna_sequence = get_dna_sequence_from_genbank(genbank_file)
-    print("Séquence d'ADN extraite :", dna_sequence)  # Ajout de cette ligne pour afficher la séquence extraite
+    #print("Séquence d'ADN extraite :", dna_sequence)  # Ajout de cette ligne pour afficher la séquence extraite
     kmer_length = 3  # Longueur des k-mers à considérer
     image_size = 1000  # Taille de l'image de sortie en pixels
     
