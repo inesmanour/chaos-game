@@ -269,7 +269,7 @@ def plot_signature_matrix(signature_matrix, k):
     -------
     None
     """
-    plt.imshow(signature_matrix, cmap='gray', interpolation='nearest')
+    plt.imshow(signature_matrix, cmap='gray', interpolation='nearest',origin='lower')
 
     for i in range(signature_matrix.shape[0]):
         for j in range(signature_matrix.shape[1]):

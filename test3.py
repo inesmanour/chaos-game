@@ -45,7 +45,7 @@ def plot_cgr(coordinates, size=1000):
         return
     
     x, y = zip(*coordinates)
-    plt.scatter(x, y, c=range(len(x)), cmap='viridis', s=5, marker='s')
+    plt.scatter(x, y, c=range(len(x)), cmap='gray', s=5, marker='s')
     plt.title("Représentation du Chaos Game")
     plt.xlabel("X")
     plt.ylabel("Y")

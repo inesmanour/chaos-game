@@ -118,8 +118,6 @@ def plot_cgr(coordinates, filename, k):
     for nucleotide, (nx, ny) in nucleotide_positions.items():
         plt.text(nx, ny, nucleotide, fontsize=12, ha='left', va='center_baseline')
     
-    # Inverser l'ordre des lignes de la matrice pour afficher correctement l'image
-    plt.gca().invert_yaxis()
     
     plt.title("Représentation CGR de {} avec {} kmer(s)".format(filename, k))
     plt.gca().set_aspect('equal', adjustable='box')
