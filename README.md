@@ -7,7 +7,7 @@ L'algorithme du Chaos Game convertit une séquence de nucléotides (ADN ou ARN) 
 ## Fonctionnalités
 Ce projet contient trois programmes Python pour l'analyse et la représentation visuelle de séquences d'ADN en utilisant l'algorithme du Chaos Game et des techniques de clustering hiérarchique.
 
-- [chaos_game.py](chaos_game.py) : Génére une représentation visuelle d'une séquence d'ADN.
+- [chaos_game.py](chaos_game.py) : Génère une représentation visuelle d'une séquence d'ADN.
 - [genomic_sign.py](genomic_sign.py) : Génère une signature génomique spécifique de la séquenced'une séquence d'ADN.
 - [clustering.py](clustering.py) : Effectue un clustering hiérarchique basé sur la signature génomique des séquences d'ADN d'un dossier.
 
