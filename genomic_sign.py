@@ -15,7 +15,6 @@ import os
 import matplotlib.pyplot as plt
 
 def read_sequence_from_gbk(gbk_file):
-    print("Lecture du fichier GenBank : {}".format(gbk_file))
     sequence = ""
     with open(gbk_file, "r") as file:
         for line in file:
