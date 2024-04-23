@@ -144,9 +144,6 @@ Nombre de matrices de signature génomique générées: 10
 ```
 ![Exemple](CGR_results/clustering.png)
 
-## Auteurs
-Ce projet a été réalisé par [Assa DIABIRA](https://github.com/assa-d) et [Inès MANOUR](https://github.com/ines-mn).
-
 ## Références
 
 1. Deschavanne, P., Giron, A., & Vilain, J. (1999). Compositional Biases in Bacterial Genomes and Evolutionary Implications. *Molecular Biology and Evolution, 16*(9), 1391–1399. [doi:10.1093/oxfordjournals.molbev.a026048](https://doi.org/10.1093/oxfordjournals.molbev.a026048)
